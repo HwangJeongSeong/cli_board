@@ -1,15 +1,18 @@
-package com.ll;
+package com.ll.view;
 
-import java.util.ArrayList;
+import com.ll.model.Article;
+import com.ll.model.ArticleRepository;
+
+import java.util.List;
 import java.util.Scanner;
 
-class ArticleManager extends getContent {
-    private ArrayList<Article> articles = new ArrayList<>();
-    private int nextId = 1;
-    private Scanner scn;
+public class View {
+    private final Scanner scn;
+    private final ArticleRepository repo;
 
-    public ArticleManager(Scanner scn) {
+    public View(Scanner scn, ArticleRepository repo) {
         this.scn = scn;
+        this.repo = repo;
     }
 
     public void register() {
@@ -18,15 +21,14 @@ class ArticleManager extends getContent {
         System.out.print("내용 : ");
         String content = scn.nextLine();
 
-        Article article = new Article(nextId, subject, content);
-        articles.add(article);
-        System.out.println(nextId + "번 게시글이 등록되었습니다.");
-        nextId++;
+        Article article = repo.save(subject, content);
+        System.out.println(article.getId() + "번 게시글이 등록되었습니다.");
     }
 
     public void printList() {
         System.out.println("번호 / 제목 / 내용");
         System.out.println("----------------------");
+        List<Article> articles = repo.findAll();
         for (int i = articles.size() - 1; i >= 0; i--) {
             Article a = articles.get(i);
             System.out.println(a.getId() + " / " + a.getSubject() + " / " + a.getContent());
@@ -35,9 +37,8 @@ class ArticleManager extends getContent {
 
     public void delete(String cmd) {
         int id = parseId(cmd);
-        Article target = findById(id);
-        if (target != null) {
-            articles.remove(target);
+        boolean result = repo.deleteById(id);
+        if (result) {
             System.out.println(id + "번 게시물이 삭제되었습니다.");
         } else {
             System.out.println(id + "번 게시물이 존재하지 않습니다.");
@@ -46,28 +47,23 @@ class ArticleManager extends getContent {
 
     public void update(String cmd) {
         int id = parseId(cmd);
-        Article target = findById(id);
-        if (target != null) {
-            System.out.println("제목(기존) : " + target.getSubject());
-            System.out.print("제목 : ");
-            target.setSubject(scn.nextLine());
-
-            System.out.println("내용(기존) : " + target.getContent());
-            System.out.print("내용 : ");
-            target.setContent(scn.nextLine());
-        } else {
+        Article a = repo.findById(id);
+        if (a == null) {
             System.out.println(id + "번 게시물이 존재하지 않습니다.");
+            return;
         }
+
+        System.out.println("제목(기존) : " + a.getSubject());
+        System.out.print("제목 : ");
+        a.setSubject(scn.nextLine());
+
+        System.out.println("내용(기존) : " + a.getContent());
+        System.out.print("내용 : ");
+        a.setContent(scn.nextLine());
     }
 
     private int parseId(String cmd) {
         return Integer.parseInt(cmd.split("=")[1]);
     }
-
-    private Article findById(int id) {
-        for (Article a : articles) {
-            if (a.getId() == id) return a;
-        }
-        return null;
-    }
 }
+

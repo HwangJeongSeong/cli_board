@@ -1,12 +1,9 @@
-package com.ll;
+package com.ll.model;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
-class Article {
-    protected int id;
-    protected String subject;
-    protected String content;
+public class Article {
+    private final int id;
+    private String subject;
+    private String content;
 
     public Article(int id, String subject, String content) {
         this.id = id;
@@ -32,22 +29,5 @@ class Article {
 
     public void setContent(String content) {
         this.content = content;
-    }
-}
-
-class getId extends getSubject {
-    public getId() {
-        super();
-    }
-}
-
-class getSubject extends getContent {
-    public getSubject() {
-        super();
-    }
-}
-
-class getContent {
-    public getContent() {
     }
 }
